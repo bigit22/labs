@@ -1,0 +1,198 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+
+// Структура для узла дерева
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Структура для хранения бинарного дерева
+typedef struct {
+    Node* root;
+} BinaryTree;
+
+// Функция для создания нового узла
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+// Функция для включения элемента в дерево
+Node* insert(Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+
+    if (data < root->data) {
+        root->left = insert(root->left, data);
+    }
+    else if (data > root->data) {
+        root->right = insert(root->right, data);
+    }
+
+    return root;
+}
+
+// Функция для поиска минимального элемента в дереве
+Node* findMin(Node* root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root;
+}
+
+// Функция для удаления элемента из дерева
+Node* deleteNode(Node* root, int data) {
+    if (root == NULL) {
+        return root;
+    }
+
+    if (data < root->data) {
+        root->left = deleteNode(root->left, data);
+    }
+    else if (data > root->data) {
+        root->right = deleteNode(root->right, data);
+    }
+    else {
+        if (root->left == NULL) {
+            Node* temp = root->right;
+            free(root);
+            return temp;
+        }
+        else if (root->right == NULL) {
+            Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        Node* temp = findMin(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
+
+// Функция для печати значений из дерева в порядке возрастания
+void printInOrder(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    printInOrder(root->left);
+    printf("%d ", root->data);
+    printInOrder(root->right);
+}
+
+// Функция для печати значений из дерева в порядке убывания
+void printInReverseOrder(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    printInReverseOrder(root->right);
+    printf("%d ", root->data);
+    printInReverseOrder(root->left);
+}
+
+// Функция для подсчета количества значений в дереве
+int countNodes(Node* root) {
+    if (root == NULL) {
+        return 0;
+    }
+    return 1 + countNodes(root->left) + countNodes(root->right);
+}
+
+// Функция для освобождения памяти, занятой деревом
+void freeTree(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+// Функция для определения глубины узла в дереве
+int depth(Node* root, Node* node, int currentDepth) {
+    if (root == NULL) {
+        return -1; // Узел не найден
+    }
+
+    if (root == node) {
+        return currentDepth;
+    }
+
+    int leftDepth = depth(root->left, node, currentDepth + 1);
+    if (leftDepth != -1) {
+        return leftDepth;
+    }
+
+    return depth(root->right, node, currentDepth + 1);
+}
+
+// Функция для сравнения двух экземпляров структуры на основе их глубины в дереве
+int compareStructsByDepth(Node* root, Node* struct1, Node* struct2) {
+    int depth1 = depth(root, struct1, 0);
+    int depth2 = depth(root, struct2, 0);
+
+    if (depth1 == -1 || depth2 == -1) {
+        return -1; // Один из узлов не найден в дереве
+    }
+
+    if (depth1 < depth2) {
+        return -1; // Первый узел находится на меньшей глубине
+    }
+    else if (depth1 > depth2) {
+        return 1; // Первый узел находится на большей глубине
+    }
+    else {
+        return 0; // Глубины узлов равны
+    }
+}
+
+int main() {
+    std::setlocale(LC_ALL, "rus");
+
+    srand(time(NULL));
+    BinaryTree tree;
+    tree.root = NULL;
+    int numElements;
+
+    printf("Введите количество чисел, которые нужно добавить в дерево: ");
+    scanf_s("%d", &numElements);
+
+    for (int i = 0; i < numElements; i++) {
+        int randomValue = rand() % 100; // Генерируем случайное число от 0 до 99
+        tree.root = insert(tree.root, randomValue);
+    }
+
+    printf("Содержимое дерева в порядке возрастания: ");
+    printInOrder(tree.root);
+    printf("\n");
+
+    printf("Содержимое дерева в порядке убывания: ");
+    printInReverseOrder(tree.root);
+    printf("\n");
+
+    printf("Количество элементов в дереве: %d\n", countNodes(tree.root));
+
+    int valueToDelete;
+    printf("Введите значение, которое нужно удалить из дерева: ");
+    scanf_s("%d", &valueToDelete);
+
+    tree.root = deleteNode(tree.root, valueToDelete);
+
+    printf("Содержимое дерева после удаления: ");
+    printInOrder(tree.root);
+    printf("\n");
+
+    freeTree(tree.root); // Освобождаем память
+
+    return 0;
+}
