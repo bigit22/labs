@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\kores\source\repos\lab_work_list\lab_work_list\main.cpp(183,16): warning C4477: "printf": в строке форматирования "%d" требуется аргумент типа "int", но вариативный аргумент "1" имеет тип "Node *"
+C:\Users\kores\source\repos\lab_work_list\lab_work_list\main.cpp(183,16): warning C4313: printf: конфликт "%d" в строке формата с аргументом 1 типа "Node *"
+  lab_work_list.vcxproj -> C:\Users\kores\source\repos\lab_work_list\x64\Debug\lab_work_list.exe
