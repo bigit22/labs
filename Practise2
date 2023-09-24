@@ -1,0 +1,148 @@
+// ebook.h (Header file)
+
+#ifndef EBOOK_H
+#define EBOOK_H
+
+// Enumeration for the manufacturer
+enum Manufacturer {
+    MANUFACTURER_A,
+    MANUFACTURER_B,
+    MANUFACTURER_C
+};
+
+// Structure to represent an ebook
+struct Ebook {
+    Manufacturer manufacturer;
+    double screenSize;  // Size of the screen
+    bool backlight;     // Presence of screen backlight
+};
+
+// Function prototypes
+bool validateEbook(const Ebook& ebook);
+bool initializeEbook(Ebook& ebook, Manufacturer manufacturer, double screenSize, bool backlight);
+void copyEbook(Ebook& dest, const Ebook& src);
+void printEbook(const Ebook& ebook);
+bool modifyEbook(Ebook& ebook, double newScreenSize);
+Ebook* createDynamicEbook(Manufacturer manufacturer, double screenSize, bool backlight);
+void deleteDynamicEbook(Ebook* ebook);
+
+// ebook.cpp (Implementation file)
+
+#include "ebook.h"
+#include <iostream>
+
+bool validateEbook(const Ebook& ebook) {
+    // Add your validation logic here
+    return true;  // Placeholder, actual validation should be implemented
+}
+
+bool initializeEbook(Ebook& ebook, Manufacturer manufacturer, double screenSize, bool backlight) {
+    ebook.manufacturer = manufacturer;
+    ebook.screenSize = screenSize;
+    ebook.backlight = backlight;
+
+    // Validate the ebook after initialization
+    if (!validateEbook(ebook))
+        return false;
+
+    return true;
+}
+
+void copyEbook(Ebook& dest, const Ebook& src) {
+    dest.manufacturer = src.manufacturer;
+    dest.screenSize = src.screenSize;
+    dest.backlight = src.backlight;
+}
+
+void printEbook(const Ebook& ebook) {
+    std::cout << "Manufacturer: " << ebook.manufacturer << ", Screen Size: " << ebook.screenSize
+        << ", Backlight: " << (ebook.backlight ? "Yes" : "No") << std::endl;
+}
+
+bool modifyEbook(Ebook& ebook, double newScreenSize) {
+    // Modify the screen size
+    ebook.screenSize = newScreenSize;
+
+    // Validate the ebook after modification
+    return validateEbook(ebook);
+}
+
+Ebook* createDynamicEbook(Manufacturer manufacturer, double screenSize, bool backlight) {
+    Ebook* ebook = new Ebook;
+
+    if (ebook == nullptr) {
+        std::cout << "Failed to allocate memory for Ebook." << std::endl;
+        return nullptr;
+    }
+
+    if (!initializeEbook(*ebook, manufacturer, screenSize, backlight)) {
+        std::cout << "Failed to initialize Ebook." << std::endl;
+        delete ebook;
+        return nullptr;
+    }
+
+    return ebook;
+}
+
+void deleteDynamicEbook(Ebook* ebook) {
+    delete ebook;
+}
+
+
+#endif // EBOOK_H
+
+
+// main.cpp
+
+#include "ebook.h"
+
+using namespace std;
+
+
+int main() {
+    // Create two ebook instances
+    Ebook ebook1, ebook2;
+
+    // Initialize ebook instances
+    initializeEbook(ebook1, MANUFACTURER_A, 10.0, true);
+    initializeEbook(ebook2, MANUFACTURER_B, 8.0, false);
+
+    // Print ebook information
+    cout << "Ebook 1 Info:\n";
+    printEbook(ebook1);
+
+    cout << "\nEbook 2 Info:\n";
+    printEbook(ebook2);
+
+    // Initialize ebook2 as a copy of ebook1
+    copyEbook(ebook2, ebook1);
+
+    // Modify a field of ebook1
+    modifyEbook(ebook1, 12.0);
+
+    cout << "\nEbook 1 Modified Info:\n";
+    printEbook(ebook1);
+
+    cout << "\nEbook 2 Info (copied from Ebook 1):\n";
+    printEbook(ebook2);
+
+    // Create dynamic ebook instances
+    Ebook* dynamicEbook1 = createDynamicEbook(MANUFACTURER_C, 7.5, true);
+    Ebook* dynamicEbook2 = createDynamicEbook(MANUFACTURER_A, 9.5, false);
+
+    if (dynamicEbook1) {
+        cout << "\nDynamic Ebook 1 Info:\n";
+        printEbook(*dynamicEbook1);
+    }
+
+    if (dynamicEbook2) {
+        cout << "\nDynamic Ebook 2 Info:\n";
+        printEbook(*dynamicEbook2);
+    }
+
+    // Delete dynamic ebook instances
+    deleteDynamicEbook(dynamicEbook1);
+    deleteDynamicEbook(dynamicEbook2);
+
+    return 0;
+}
